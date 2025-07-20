@@ -1,0 +1,4 @@
+3
+push -8
+push 0
+get_max
