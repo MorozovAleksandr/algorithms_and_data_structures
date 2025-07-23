@@ -1,0 +1,7 @@
+5
+2
+push -5
+peek
+pop
+peek
+size
