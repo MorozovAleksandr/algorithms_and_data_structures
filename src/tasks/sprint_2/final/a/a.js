@@ -34,9 +34,9 @@ const readOperations = (countOperations) => {
 }
 
 class Deque {
-    constructor(size) {
-        this.deque = Array(size);
-        this.maxSize = size;
+    constructor(maxSize) {
+        this.deque = Array(maxSize);
+        this.maxSize = maxSize;
         this.size = 0;
         this.head = 0;
         this.tail = 0;
