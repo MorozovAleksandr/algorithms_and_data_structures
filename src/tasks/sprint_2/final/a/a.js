@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/22781/run-report/140554308/
+// https://contest.yandex.ru/contest/22781/run-report/140565609/
 
 const _readline = require('readline');
 
@@ -63,7 +63,6 @@ class Deque {
 
         this.tail = (this.tail - 1 + this.maxSize) % this.maxSize;
         const value = this.deque[this.tail];
-        this.deque[this.tail] = undefined;
         this.size--;
 
         return value;
@@ -73,7 +72,6 @@ class Deque {
         if (this.isEmpty()) return "error";
 
         const value = this.deque[this.head];
-        this.deque[this.head] = undefined;
         this.head = (this.head + 1) % this.maxSize;
         this.size--;
 
