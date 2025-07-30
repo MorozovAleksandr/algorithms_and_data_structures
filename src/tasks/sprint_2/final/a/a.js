@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/22781/run-report/140565609/
+// https://contest.yandex.ru/contest/22781/run-report/140593865/
 
 const _readline = require('readline');
 
@@ -33,46 +33,63 @@ const readOperations = (countOperations) => {
     return operations;
 }
 
+const mapMethodDequeNames = {
+    push_back: "pushBack",
+    push_front: "pushFront",
+    pop_back: "popBack",
+    pop_front: "popFront"
+}
+
+const ERROR_MESSAGE = 'error';
+
 class Deque {
     constructor(maxSize) {
-        this.deque = Array(maxSize);
+        this.deque = [];
+        this.deque.length = maxSize;
         this.maxSize = maxSize;
         this.size = 0;
         this.head = 0;
         this.tail = 0;
     }
 
-    push_back(element) {
-        if (this.isFull()) return "error";
+    static ERROR_DEQUE_IS_FULL = 'deque is full';
+    static ERROR_DEQUE_IS_EMPTY = 'deque is empty';
 
-        this.deque[this.tail] = element;
-        this.tail = (this.tail + 1) % this.maxSize;
+    #moveIterator(previousIteratorValue, step) {
+        return (previousIteratorValue + step + this.maxSize) % this.maxSize;
+    }
+
+    pushBack(element) {
+        if (this.isFull()) throw new Error(Deque.ERROR_DEQUE_IS_FULL);
+
+        this.deque[this.tail] = Number(element);
+        this.tail = this.#moveIterator(this.tail, 1);
         this.size++;
     }
 
-    push_front(element) {
-        if (this.isFull()) return "error";
+    pushFront(element) {
+        if (this.isFull()) throw new Error(Deque.ERROR_DEQUE_IS_FULL);
 
-        this.head = (this.head - 1 + this.maxSize) % this.maxSize;
-        this.deque[this.head] = element;
+        this.head = this.#moveIterator(this.head, -1);
+        this.deque[this.head] = Number(element);
         this.size++;
     }
 
-    pop_back() {
-        if (this.isEmpty()) return "error";
+    popBack() {
+        if (this.isEmpty()) throw new Error(Deque.ERROR_DEQUE_IS_EMPTY);
 
-        this.tail = (this.tail - 1 + this.maxSize) % this.maxSize;
+        this.tail = this.#moveIterator(this.tail, -1);
         const value = this.deque[this.tail];
         this.size--;
 
         return value;
     }
 
-    pop_front() {
-        if (this.isEmpty()) return "error";
+    popFront() {
+        if (this.isEmpty()) throw new Error(Deque.ERROR_DEQUE_IS_EMPTY);
 
         const value = this.deque[this.head];
-        this.head = (this.head + 1) % this.maxSize;
+        this.head = this.#moveIterator(this.head, 1);
         this.size--;
 
         return value;
@@ -92,11 +109,15 @@ const executeDequeOperations = (operations, dequeSize) => {
     const deque = new Deque(dequeSize);
     for (const operation of operations) {
         const [method, arg] = splitString(operation);
+        const methodName = mapMethodDequeNames[method];
+        try {
+            const operationResult = deque[methodName](arg);
 
-        const operationResult = deque[method](arg);
-
-        if (typeof operationResult !== 'undefined') {
-            result.push(operationResult);
+            if (typeof operationResult === 'number') {
+                result.push(operationResult);
+            }
+        } catch (e) {
+            result.push(ERROR_MESSAGE);
         }
     }
 
