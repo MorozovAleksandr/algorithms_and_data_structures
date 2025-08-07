@@ -1,28 +1,26 @@
-var mySqrt = function (x) {
-    if (x < 2) {
-        return x;
+const binarySearch = (array, element, left = 0, right = array.length - 1) => {
+    if (left > right) {
+        return -1; // элемент не найден
     }
-    let left = 2;
-    let right = x;
 
-    while (left <= right) {
-        const mid = Math.floor((left + right) / 2);
-        const square = mid * mid;
-
-        if (square === x) {
-            return mid;
+    const mid = Math.floor((left + right) / 2);
+    
+    if (array[mid] === element) {
+        if (mid !== 0 && array[mid - 1] === element) {
+            return binarySearch(array, element, left, mid - 1);
         }
-
-        if (square > x && ((mid - 1) * (mid - 1)) < x) {
-            return mid - 1;
-        }
-
-        if (square < x) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
+        return mid;
     }
-};
 
-console.log(mySqrt(8));
+    if (array[mid] < element) {
+        return binarySearch(array, element, mid + 1, right);
+    } else {
+        return binarySearch(array, element, left, mid - 1);
+    }
+}
+
+const arr = [1, 2, 2, 3, 4, 5, 20, 21, 32, 44, 51];
+
+const findIndex = binarySearch(arr, 2);
+
+console.log(findIndex);
