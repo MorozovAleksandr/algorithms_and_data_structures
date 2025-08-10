@@ -1,3 +1,4 @@
+// https://contest.yandex.ru/contest/23815/run-report/140851212/
 const _readline = require('readline');
 
 const _reader = _readline.createInterface({
@@ -27,7 +28,7 @@ const splitString = (str) => {
     return str.trim().split(' ').map(toNum);
 }
 
-const output = arr => {
+const printParticipants = arr => {
     for (let item of arr) {
         console.log(item[0]);
     }
@@ -37,40 +38,35 @@ const compareArrays = (a, b) => {
     const [nameA, pointsA, penaltyA] = a;
     const [nameB, pointsB, penaltyB] = b;
 
-    if (pointsA > pointsB) return -1;
-    if (pointsA < pointsB) return 1;
+    if (pointsA !== pointsB) return pointsB - pointsA;
 
-    if (penaltyA < penaltyB) return -1;
-    if (penaltyA > penaltyB) return 1;
+    if (penaltyA !== penaltyB) return penaltyA - penaltyB;
 
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-
-    return 0;
+    return nameA.localeCompare(nameB);
 };
 
-const quickSort = (arr) => {
-    if (arr.length < 2) {
-        return arr;
-    } else {
-        const pivot = arr[Math.floor(Math.random() * arr.length)];
+const quickSort = (arr, left = 0, right = arr.length - 1) => {
+    if (left >= right) return arr;
 
-        const left = [];
-        const mid = [];
-        const right = [];
-        for (let i = 0; i < arr.length; i++) {
-            const cmp = compareArrays(arr[i], pivot);
-            if (cmp < 0) {
-                left.push(arr[i]);
-            } else if (cmp > 0) {
-                right.push(arr[i]);
-            } else {
-                mid.push(arr[i]);
-            }
+    const pivot = arr[Math.floor((left + right) / 2)];
+    let tempLeft = left;
+    let tempRight = right;
+
+    while (tempLeft <= tempRight) {
+        while (compareArrays(arr[tempLeft], pivot) < 0) tempLeft++;
+        while (compareArrays(arr[tempRight], pivot) > 0) tempRight--;
+
+        if (tempLeft <= tempRight) {
+            [arr[tempLeft], arr[tempRight]] = [arr[tempRight], arr[tempLeft]];
+            tempLeft++;
+            tempRight--;
         }
-
-        return [...quickSort(left), ...quickSort(mid), ...quickSort(right)];
     }
+
+    if (left < tempRight) quickSort(arr, left, tempRight);
+    if (tempLeft < right) quickSort(arr, tempLeft, right);
+
+    return arr;
 }
 
 function solve() {
@@ -79,7 +75,6 @@ function solve() {
     for (let i = 0; i < countParticipants; i++) {
         participants.push(splitString(getString()));
     }
-    const result = quickSort(participants);
 
-    output(result);
+    printParticipants(quickSort(participants));
 }
