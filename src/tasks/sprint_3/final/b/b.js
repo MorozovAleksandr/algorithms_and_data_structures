@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/23815/run-report/140851212/
+// https://contest.yandex.ru/contest/23815/run-report/140894570/
 const _readline = require('readline');
 
 const _reader = _readline.createInterface({
@@ -45,7 +45,7 @@ const compareArrays = (a, b) => {
     return nameA.localeCompare(nameB);
 };
 
-const quickSort = (arr, left = 0, right = arr.length - 1) => {
+const quickSort = (arr, compareFunction, left = 0, right = arr.length - 1) => {
     if (left >= right) return arr;
 
     const pivot = arr[Math.floor((left + right) / 2)];
@@ -53,8 +53,8 @@ const quickSort = (arr, left = 0, right = arr.length - 1) => {
     let tempRight = right;
 
     while (tempLeft <= tempRight) {
-        while (compareArrays(arr[tempLeft], pivot) < 0) tempLeft++;
-        while (compareArrays(arr[tempRight], pivot) > 0) tempRight--;
+        while (compareFunction(arr[tempLeft], pivot) < 0) tempLeft++;
+        while (compareFunction(arr[tempRight], pivot) > 0) tempRight--;
 
         if (tempLeft <= tempRight) {
             [arr[tempLeft], arr[tempRight]] = [arr[tempRight], arr[tempLeft]];
@@ -63,8 +63,8 @@ const quickSort = (arr, left = 0, right = arr.length - 1) => {
         }
     }
 
-    if (left < tempRight) quickSort(arr, left, tempRight);
-    if (tempLeft < right) quickSort(arr, tempLeft, right);
+    if (left < tempRight) quickSort(arr, compareFunction, left, tempRight);
+    if (tempLeft < right) quickSort(arr, compareFunction, tempLeft, right);
 
     return arr;
 }
@@ -76,5 +76,5 @@ function solve() {
         participants.push(splitString(getString()));
     }
 
-    printParticipants(quickSort(participants));
+    printParticipants(quickSort(participants, compareArrays));
 }
