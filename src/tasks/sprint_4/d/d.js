@@ -32,8 +32,10 @@ function solve() {
     const basis = Number(getString());
     const mod = Number(getString());
     const string = getString();
+    const string2 = getString();
 
     const hash = getHash(basis, mod, string);
-    
-    console.log(hash);
+    const hash2 = getHash(basis, mod, string2);
+
+    console.log(hash, hash2);
 }
