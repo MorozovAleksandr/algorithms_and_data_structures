@@ -1,3 +1,5 @@
+// https://contest.yandex.ru/contest/24414/run-report/141538659/
+
 const _readline = require('readline');
 
 const _reader = _readline.createInterface({
@@ -18,15 +20,16 @@ const getString = () => {
     return _inputLines[_curLine++];
 }
 
-const splitString = (string) => {
-    return string.trim().split(" ");
+const toNum = item => {
+    const num = Number(item);
+    return isNaN(num) ? item : num;
 }
 
-const parseRequest = (request) => ({
-    method: request[0],
-    key: request[1],
-    ...(request[2] ? {value: request[2]} : {})
-});
+const splitString = (string) => {
+    return string.trim().split(" ").map(toNum);
+}
+
+const ERROR_OPERATION = 'None';
 
 class Node {
     constructor(key, value = null, next = null) {
@@ -37,25 +40,21 @@ class Node {
 }
 
 class HashTable {
-    constructor(maxSize) {
-        this.map = [];
-        this.size = 0;
+    static ERROR_KEY_NOT_EXIST = 'key does not exist';
+    static MAX_SIZE = 100000;
+
+    constructor(maxSize = HashTable.MAX_SIZE) {
+        this.table = [];
         this.maxSize = maxSize;
     }
 
-    static ERROR_KEY_NOT_EXIST = 'key does not exist';
-    static SIMPLE_NUMBER = 2654435761;
-
     hash(key) {
-        const positiveKey = Math.abs(key);
-
-        return (positiveKey * HashTable.SIMPLE_NUMBER) % this.maxSize;
+        return Math.abs(key) % this.maxSize;
     }
 
     put(key, value) {
         const index = this.hash(key);
-        let node = this.map[index];
-
+        let node = this.table[index];
 
         while (node) {
             if (node.key === key) {
@@ -65,22 +64,19 @@ class HashTable {
             node = node.next;
         }
 
-        this.map[index] = new Node(key, value, this.map[index]);
-        this.size++;
+        this.table[index] = new Node(key, value, this.table[index]);
     }
 
 
     get(key) {
         const index = this.hash(key);
-        let node = this.map[index];
+        let node = this.table[index];
 
-        if (node) {
-            while (node) {
-                if (node.key === key) {
-                    return node.value;
-                }
-                node = node.next;
+        while (node) {
+            if (node.key === key) {
+                return node.value;
             }
+            node = node.next;
         }
 
         throw new Error(HashTable.ERROR_KEY_NOT_EXIST);
@@ -89,17 +85,16 @@ class HashTable {
     delete(key) {
         const index = this.hash(key);
         let prevNode = null;
-        let node = this.map[index];
+        let node = this.table[index];
 
         while (node) {
             if (node.key === key) {
                 const value = node.value;
                 if (prevNode === null) {
-                    this.map[index] = node.next;
+                    this.table[index] = node.next;
                 } else {
                     prevNode.next = node.next;
                 }
-                this.size--;
                 return value;
             }
 
@@ -107,21 +102,19 @@ class HashTable {
             node = node.next;
         }
 
-
         throw new Error(HashTable.ERROR_KEY_NOT_EXIST);
     }
 }
 
-const ERROR_OPERATION = 'None';
-const MAX_SIZE = 100000;
+const printResult = (result) => console.log(result.join('\n'));
 
-const processRequests = (requests) => {
+const processRequests = (countRequests) => {
     const result = [];
 
-    const table = new HashTable(MAX_SIZE);
-    for (const request of requests) {
+    const table = new HashTable();
+    for (let i = 0; i < countRequests; i++) {
         try {
-            const {method, key, value} = request;
+            const [method, key, value] = splitString(getString());
 
             const resultOperation = table[method](key, value);
             if (resultOperation) {
@@ -135,18 +128,9 @@ const processRequests = (requests) => {
     return result;
 }
 
-const printResult = (result) => console.log(result.join('\n'));
-
 function solve() {
     const countRequests = Number(getString());
-    const requests = [];
-    for (let i = 0; i < countRequests; i++) {
-        const arrRequest = splitString(getString());
-        const parsedRequest = parseRequest(arrRequest);
-        requests.push(parsedRequest);
-    }
-
-    const result = processRequests(requests);
+    const result = processRequests(countRequests);
 
     printResult(result);
 }
