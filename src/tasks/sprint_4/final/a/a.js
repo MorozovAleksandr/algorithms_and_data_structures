@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/24414/run-report/141475397/
+// https://contest.yandex.ru/contest/24414/run-report/141589424/
 
 const _readline = require('readline');
 
@@ -60,6 +60,31 @@ const buildInvertedIndex = (documents) => {
     return {documentsWordFreq, invertedIndex};
 }
 
+const isBetterDocument = (a, b) => a[1] > b[1] || (a[1] === b[1] && a[0] < b[0]);
+
+const compareDocs = (a, b) => b[1] - a[1] || a[0] - b[0];
+
+const partialSort = (arr, limit = 5) => {
+    if (arr.length < limit) {
+        return arr.sort(compareDocs);
+    }
+
+    for (let i = 0; i < limit; ++i) {
+        let bestIdx = i;
+        for (let j = i + 1; j < arr.length; j++) {
+            if (isBetterDocument(arr[j], arr[bestIdx])) {
+                bestIdx = j;
+            }
+        }
+
+        if (bestIdx !== i) {
+            [arr[i], arr[bestIdx]] = [arr[bestIdx], arr[i]];
+        }
+    }
+    return arr.slice(0, limit).sort(compareDocs);
+}
+
+
 const searchRelevantDocuments = (request, {documentsWordFreq, invertedIndex}, maxDocs) => {
     const scores = new Map();
 
@@ -72,10 +97,10 @@ const searchRelevantDocuments = (request, {documentsWordFreq, invertedIndex}, ma
         }
     }
 
-    return Array.from(scores.entries())
-        .sort((a, b) => b[1] - a[1] || a[0] - b[0])
-        .slice(0, maxDocs)
-        .map(([docIndex]) => docIndex + 1);
+    const scoreEntries = Array.from(scores.entries());
+    const topEntries = partialSort(scoreEntries, maxDocs);
+
+    return topEntries.map(([docIndex]) => docIndex + 1);
 }
 
 const getRelevantDocuments = (documents, requests) => {

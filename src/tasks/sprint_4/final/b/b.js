@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/24414/run-report/141538659/
+// https://contest.yandex.ru/contest/24414/run-report/141539124/
 
 const _readline = require('readline');
 
@@ -116,9 +116,9 @@ const processRequests = (countRequests) => {
         try {
             const [method, key, value] = splitString(getString());
 
-            const resultOperation = table[method](key, value);
-            if (resultOperation) {
-                result.push(resultOperation);
+            const operationResult = table[method](key, value);
+            if (typeof operationResult === 'number') {
+                result.push(operationResult);
             }
         } catch (e) {
             result.push(ERROR_OPERATION);
