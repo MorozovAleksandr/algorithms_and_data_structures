@@ -22,34 +22,40 @@ const splitString = (string) => {
     return string.trim().split(" ").map(Number);
 }
 
-const solution = (a, arr) => {
-    const history = new Set();
-    const fourth = new Set();
+const solution = (target, arr) => {
+    arr.sort((a, b) => a - b);
+    const results = [];
 
-    for (let i = 0; i < arr.length; i++) {
-        for (let j = i + 1; j < arr.length; j++) {
-            for (let k = j + 1; k < arr.length; k++) {
-                const target = a - arr[i] - arr[j] - arr[k];
-                if (history.has(target)) {
-                    const four = [target, arr[i], arr[j], arr[k]].sort((a, b) => a - b).toString();
-                    fourth.add(four);
+    for (let i = 0; i < arr.length - 3; i++) {
+        if (i > 0 && arr[i] === arr[i - 1]) continue; // пропускаем дубликаты
+
+        for (let j = i + 1; j < arr.length - 2; j++) {
+            if (j > i + 1 && arr[j] === arr[j - 1]) continue; // пропускаем дубликаты
+
+            let left = j + 1;
+            let right = arr.length - 1;
+
+            while (left < right) {
+                const sum = arr[i] + arr[j] + arr[left] + arr[right];
+                if (sum === target) {
+                    results.push([arr[i], arr[j], arr[left], arr[right]]);
+                    // пропускаем дубликаты
+                    while (left < right && arr[left] === arr[left + 1]) left++;
+                    while (left < right && arr[right] === arr[right - 1]) right--;
+                    left++;
+                    right--;
+                } else if (sum < target) {
+                    left++;
+                } else {
+                    right--;
                 }
             }
         }
-        history.add(arr[i]);
     }
 
+    return results;
+};
 
-    return [...fourth].map(four => four.split(',')).sort((a, b) => {
-        for (let i = 0; i < a.length; i++) {
-            if (a[i] !== b[i]) {
-                return a[i] - b[i];
-            }
-        }
-
-        return a.length - b.length;
-    });
-}
 
 function solve() {
     const length = Number(getString());
