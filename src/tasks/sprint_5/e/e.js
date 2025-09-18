@@ -16,11 +16,7 @@ const isValidBST = (root, min = -Infinity, max = Infinity) => {
         return false;
     }
 
-    if (root.right && !isValidBST(root.right, root.value, max)) {
-        return false;
-    }
-
-    return true;
+    return !(root.right && !isValidBST(root.right, root.value, max));
 }
 
 function solution(root) {
