@@ -1,4 +1,4 @@
-// https://contest.yandex.ru/contest/24810/run-report/143736584/
+// https://contest.yandex.ru/contest/24810/run-report/143820181/
 
 const _readline = require('readline');
 
@@ -66,7 +66,7 @@ class Heap {
         while (index > 1) {
             const parentIndex = Math.floor(index / 2);
 
-            if (this.comparator(this.heap[index], this.heap[parentIndex]) < 0) {
+            if (this.comparator(this.heap[parentIndex], this.heap[index]) > 0) {
                 [this.heap[index], this.heap[parentIndex]] = [this.heap[parentIndex], this.heap[index]];
                 index = parentIndex;
             } else {
@@ -86,11 +86,11 @@ class Heap {
             const right = index * 2 + 1;
             let largest = index;
 
-            if (left < this.heap.length && this.comparator(this.heap[left], this.heap[largest]) < 0) {
+            if (left < this.heap.length && this.comparator(this.heap[largest], this.heap[left]) > 0) {
                 largest = left;
             }
 
-            if (right < this.heap.length && this.comparator(this.heap[right], this.heap[largest]) < 0) {
+            if (right < this.heap.length && this.comparator(this.heap[largest], this.heap[right]) > 0) {
                 largest = right;
             }
 

@@ -1,6 +1,6 @@
 5
-alla 0 0
-gena 0 0
-gosha 0 0
-rita 0 0
+alla 0 10
+gena 0 9
+gosha 0 8
+rita 0 7
 timofey 0 0
