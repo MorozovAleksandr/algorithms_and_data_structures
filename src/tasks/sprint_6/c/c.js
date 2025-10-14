@@ -22,21 +22,6 @@ const splitString = (string) => {
     return string.trim().split(" ").map(Number);
 }
 
-const WHITE = 'white';
-const GRAY = 'gray';
-const BLACK = 'black';
-
-const getRibs = count => {
-    const ribs = [];
-
-    for (let i = 0; i < count; i++) {
-        ribs.push(splitString(getString()));
-    }
-
-    return ribs;
-}
-
-
 function solve() {
     const [countPeaks, countRibs] = splitString(getString());
 
@@ -44,7 +29,7 @@ function solve() {
     for (let i = 0; i <= countPeaks; i++) {
         adjacencyList[i] = [];
     }
-
+  
     for (let i = 0; i < countRibs; i++) {
         const [u, v] = splitString(getString());
         adjacencyList[u].push(v);
