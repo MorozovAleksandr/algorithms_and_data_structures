@@ -1,6 +1,7 @@
-//https://contest.yandex.ru/contest/26133/run-report/147406305/
+//https://contest.yandex.ru/contest/26133/run-report/147495911/
+
 const _readline = require('readline');
-const _reader = _readline.createInterface({input: process.stdin});
+const _reader = _readline.createInterface({ input: process.stdin });
 const _inputLines = [];
 let _curLine = 0;
 
@@ -11,7 +12,6 @@ _reader.on('line', line => {
 process.stdin.on('end', solve);
 
 const getString = () => _inputLines[_curLine++];
-
 const getWords = count => {
     const words = [];
     for (let i = 0; i < count; i++) {
@@ -20,34 +20,74 @@ const getWords = count => {
     return words;
 };
 
-const canBeSegmented = (text, dict) => {
-    const dp = new Array(text.length + 1).fill(false);
+class TrieNode {
+    constructor() {
+        this.children = {};
+        this.isEnd = false;
+    }
+}
+
+class Trie {
+    constructor() {
+        this.root = new TrieNode();
+    }
+
+    insert(word) {
+        let node = this.root;
+        for (let char of word) {
+            if (!node.children[char]) {
+                node.children[char] = new TrieNode();
+            }
+            node = node.children[char];
+        }
+        node.isEnd = true;
+    }
+
+    getWordEndings(text, start) {
+        const result = [];
+        let node = this.root;
+
+        for (let i = start; i < text.length; i++) {
+            const char = text[i];
+            if (!node.children[char]) break;
+            node = node.children[char];
+            if (node.isEnd) {
+                result.push(i + 1);
+            }
+        }
+
+        return result;
+    }
+}
+
+const canBeSegmented = (text, trie) => {
+    const n = text.length;
+    const dp = new Array(n + 1).fill(false);
     dp[0] = true;
 
-    for (let i = 1; i <= text.length; i++) {
-        for (let word of dict) {
-            const len = word.length;
-            if (i >= len && dp[i - len]) {
-                if (text.slice(i - len, i) === word) {
-                    dp[i] = true;
-                    break;
-                }
-            }
+    for (let i = 0; i < n; i++) {
+        if (!dp[i]) continue;
+        const endings = trie.getWordEndings(text, i);
+        for (let end of endings) {
+            dp[end] = true;
         }
     }
 
-    return dp[text.length];
-}
+    return dp[n];
+};
 
-const printResult = (result) => console.log(result ? 'YES' : 'NO');
+const printResult = result => console.log(result ? 'YES' : 'NO');
 
 function solve() {
     const text = getString();
     const n = Number(getString());
     const words = getWords(n);
 
-    const dict = new Set(words);
-    const result = canBeSegmented(text, dict);
+    const trie = new Trie();
+    for (let word of words) {
+        trie.insert(word);
+    }
 
+    const result = canBeSegmented(text, trie);
     printResult(result);
 }
